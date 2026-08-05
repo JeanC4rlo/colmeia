@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, nativeTheme } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -14,6 +14,9 @@ const createWindow = () => {
         height: 900,
         minWidth: 1000,
         minHeight: 750,
+        icon: nativeTheme.shouldUseDarkColors ? 
+            path.join(__dirname, "../public/favicon-96x96-dark.png") : 
+            path.join(__dirname, "../public/favicon-96x96.png"),
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
             contextIsolation: true,
