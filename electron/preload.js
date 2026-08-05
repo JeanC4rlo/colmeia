@@ -1,0 +1,1 @@
+// TODO: criar a API de comunicação entre o React e o Electron
