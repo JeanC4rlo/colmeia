@@ -21,13 +21,7 @@ export type EmptyTile = {
   type: "empty";
 };
 
-export type ChatbotTile = {
-  id: string;
-  type: "chatbot";
-}
-
-export type Tile = | EmptyTile
-                   | ChatbotTile;
+export type Tile = | EmptyTile;
 
 type Sidebar = {
   collapsed: boolean;
