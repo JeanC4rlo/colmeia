@@ -6,8 +6,17 @@ import { BranchView } from "./BranchView";
 
 type BranchTreeRendererProps = {
   root: Branch;
-  onDrop?: (leafId: string, position: DropPosition, tileType: Tile["type"]) => void;
+  onDrop?: (
+    targetLeafId: string,
+    position: DropPosition,
+    tileType: Tile["type"],
+    sourceLeafId?: string
+  ) => void;
   onClose?: (leafId: string) => void;
+};
+
+const readTileType = (dataTransfer: DataTransfer) => {
+  return dataTransfer.getData("tile-type");
 };
 
 export const BranchTreeRenderer = ({
@@ -15,19 +24,25 @@ export const BranchTreeRenderer = ({
   onDrop,
   onClose,
 }: BranchTreeRendererProps) => {
-  const [activeDropPosition, setActiveDropPosition] = useState<DropPosition | null>(null);
+  const [activeDropPosition, setActiveDropPosition] =
+    useState<DropPosition | null>(null);
 
   if (root.type === "split") {
     return <BranchView branch={root} onDrop={onDrop} onClose={onClose} />;
   }
+
+  const handleDragStart = (event: DragEvent<HTMLDivElement>) => {
+    event.dataTransfer.effectAllowed = "copyMove";
+    event.dataTransfer.setData("tile-type", root.tile.type);
+    event.dataTransfer.setData("source-leaf-id", root.id);
+  };
 
   const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
     event.dataTransfer.dropEffect = "copy";
 
-    const position = getDropPosition(event);
-    setActiveDropPosition(position);
+    setActiveDropPosition(getDropPosition(event));
   };
 
   const handleDragLeave = (event: DragEvent<HTMLDivElement>) => {
@@ -40,19 +55,23 @@ export const BranchTreeRenderer = ({
     event.preventDefault();
     event.stopPropagation();
     setActiveDropPosition(null);
-    
-    const rawType = event.dataTransfer.getData("tile-type");
-    if (!rawType || !onDrop) return;
 
-    const tileType = rawType as Tile["type"];
+    if (!onDrop) return;
 
-    const position = getDropPosition(event);
-    onDrop(root.id, position, tileType);
+    const tileType = readTileType(event.dataTransfer);
+    if (!tileType) return;
+
+    const sourceLeafId = event.dataTransfer.getData("source-leaf-id") || undefined;
+    if (sourceLeafId === root.id) return;
+
+    onDrop(root.id, getDropPosition(event), tileType as Tile["type"], sourceLeafId);
   };
 
   return (
     <div
       className="relative h-full w-full"
+      draggable
+      onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}

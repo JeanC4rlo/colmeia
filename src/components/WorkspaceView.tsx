@@ -1,7 +1,11 @@
 import { useRef, useState } from "react";
-import type { Tile, Workspace } from "../types/tiling";
+import type { Branch, Tile, Workspace } from "../types/tiling";
 import { insertTile, removeTile, type DropPosition } from "../utils/tiling";
 import { BranchTreeRenderer } from "./BranchTreeRenderer";
+
+const readTileType = (dataTransfer: DataTransfer) => {
+  return dataTransfer.getData("tile-type");
+};
 
 export const WorkspaceView = () => {
   const [workspace, setWorkspace] = useState<Workspace>({
@@ -25,7 +29,7 @@ export const WorkspaceView = () => {
 
     if (root !== null) return;
 
-    const tileType = event.dataTransfer.getData("tile-type");
+    const tileType = readTileType(event.dataTransfer);
     if (!tileType) return;
 
     setWorkspace((current) => ({
@@ -35,29 +39,41 @@ export const WorkspaceView = () => {
         type: "leaf",
         tile: {
           id: crypto.randomUUID(),
-          type: tileType as "empty",
+          type: tileType as Tile["type"],
         },
       },
     }));
   };
 
   const handleTileDrop = (
-    leafId: string,
+    targetLeafId: string,
     position: DropPosition,
     tileType: Tile["type"],
+    sourceLeafId?: string
   ) => {
-    setWorkspace((current) => ({
-      ...current,
-      root: insertTile(
+    setWorkspace((current) => {
+      if (!current.root) return current;
+      if (sourceLeafId === targetLeafId) return current;
+
+      let updatedRoot: Branch | null = insertTile(
         current.root,
-        leafId,
+        targetLeafId,
         {
           id: crypto.randomUUID(),
-          type: tileType
+          type: tileType,
         },
-        position,
-      ),
-    }));
+        position
+      );
+
+      if (sourceLeafId && updatedRoot) {
+        updatedRoot = removeTile(updatedRoot, sourceLeafId);
+      }
+
+      return {
+        ...current,
+        root: updatedRoot,
+      };
+    });
   };
 
   const handleTileClose = (leafId: string) => {
@@ -90,7 +106,6 @@ export const WorkspaceView = () => {
         <div className="flex h-full w-full items-center justify-center rounded-lg border border-dashed border-gray-300">
           <div className="text-center">
             <p className="text-lg font-semibold">Arraste e solte</p>
-
             <p className="mt-1 text-sm text-gray-500">
               Arraste uma ferramenta na sidebar para o workspace
               <br />

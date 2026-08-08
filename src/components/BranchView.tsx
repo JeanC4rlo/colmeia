@@ -1,13 +1,18 @@
 import { useRef, useState } from "react";
 import type { SplitBranch, Tile } from "../types/tiling";
+import type { DropPosition } from "../utils/tiling";
 import { BranchTreeRenderer } from "./BranchTreeRenderer";
 import { Separator } from "./Separator";
-import type { DropPosition } from "../utils/tiling";
 
 type BranchViewProps = {
   branch: SplitBranch;
   onRatioChange?: (newRatio: number) => void;
-  onDrop?: (leafId: string, position: DropPosition, tileType: Tile["type"]) => void;
+  onDrop?: (
+    leafId: string, 
+    position: DropPosition, 
+    tileType: Tile["type"], 
+    sourceLeafId?: string
+  ) => void;
   onClose?: (leafId: string) => void;
 };
 
