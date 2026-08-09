@@ -1,15 +1,16 @@
 import type { Tile } from "../types/tiling";
 import { tools } from "../types/tools";
-import { EmptyTileView } from "./tiles/EmptyTileView";
+import { ChatbotTileView } from "./tiles/ChatbotTileView";
 import { XIcon } from "lucide-react";
 
 type TileViewProps = {
   tile: Tile;
+  focused?: boolean;
   onClose?: (tileId: string) => void;
   onClick?: (tileId: string) => void;
 };
 
-export const TileView = ({ tile, onClose, onClick }: TileViewProps) => {
+export const TileView = ({ tile, focused = false, onClose, onClick }: TileViewProps) => {
   const tool = tools.find((t) => t.tile === tile.type);
   const Icon = tool?.icon;
 
@@ -21,17 +22,20 @@ export const TileView = ({ tile, onClose, onClick }: TileViewProps) => {
 
   return (
     <div
+      onClickCapture={() => onClick?.(tile.id)}
+      className={`relative flex h-full w-full flex-col overflow-hidden rounded-lg border bg-white border-2
+        ${focused ? "border-solid border-amber-500" : "border-dashed border-gray-300"}`}
+    >
+      <div className="absolute inset-0 pointer-events-none z-0" onClickCapture={() => onClick?.(tile.id)} />
+
+    <div
       draggable={true}
       onDragStart={handleDragStart}
-      onClick={() => onClick?.(tile.id)}
-      className="w-full h-full border border-dashed border-gray-300 flex flex-col rounded-lg overflow-hidden cursor-grab active:cursor-grabbing"
+        className="z-10 flex items-center justify-between border-b border-gray-200 bg-gray-100 px-3 py-2 select-none cursor-grab active:cursor-grabbing"
     >
-      <div className="flex items-center justify-between px-3 py-2 bg-gray-100 border-b border-gray-200 select-none">
-        <div className="flex items-center gap-2 text-gray-700">
+        <div className="flex items-center gap-2 text-gray-700 pointer-events-none">
           {Icon && <Icon size={16} />}
-          <span className="text-sm font-semibold capitalize">
-            {tile.type}
-          </span>
+          <span className="text-sm font-semibold capitalize">{tile.type}</span>
         </div>
         <button
           onClick={(e) => {
@@ -44,7 +48,14 @@ export const TileView = ({ tile, onClose, onClick }: TileViewProps) => {
         </button>
       </div>
 
-      <div className="flex-1 p-2">
+      <div 
+        className="relative z-10 flex-1 p-2 overflow-y-auto"
+        draggable={true}
+        onDragStart={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+      >
         {(() => {
           switch (tile.type) {
             case "empty":

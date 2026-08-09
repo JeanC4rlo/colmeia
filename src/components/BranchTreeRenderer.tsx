@@ -6,6 +6,7 @@ import { BranchView } from "./BranchView";
 
 type BranchTreeRendererProps = {
   root: Branch;
+  focusedTileId?: string | null;
   onDrop?: (
     targetLeafId: string,
     position: DropPosition,
@@ -13,27 +14,38 @@ type BranchTreeRendererProps = {
     sourceLeafId?: string
   ) => void;
   onClose?: (leafId: string) => void;
+  onClick?: (leafId: string) => void;
 };
 
 const readTileType = (dataTransfer: DataTransfer) => {
-  return dataTransfer.getData("tile-type");
+  return dataTransfer.getData("tile-type") || dataTransfer.getData("text/plain");
 };
 
 export const BranchTreeRenderer = ({
   root,
+  focusedTileId,
   onDrop,
   onClose,
+  onClick,
 }: BranchTreeRendererProps) => {
-  const [activeDropPosition, setActiveDropPosition] =
-    useState<DropPosition | null>(null);
+  const [activeDropPosition, setActiveDropPosition] = useState<DropPosition | null>(null);
 
   if (root.type === "split") {
-    return <BranchView branch={root} onDrop={onDrop} onClose={onClose} />;
+    return (
+      <BranchView
+        branch={root}
+        focusedTileId={focusedTileId}
+        onDrop={onDrop}
+        onClose={onClose}
+        onClick={onClick}
+      />
+    );
   }
 
   const handleDragStart = (event: DragEvent<HTMLDivElement>) => {
     event.dataTransfer.effectAllowed = "copyMove";
     event.dataTransfer.setData("tile-type", root.tile.type);
+    event.dataTransfer.setData("text/plain", root.tile.type);
     event.dataTransfer.setData("source-leaf-id", root.id);
   };
 
@@ -41,7 +53,6 @@ export const BranchTreeRenderer = ({
     event.preventDefault();
     event.stopPropagation();
     event.dataTransfer.dropEffect = "copy";
-
     setActiveDropPosition(getDropPosition(event));
   };
 
@@ -76,7 +87,12 @@ export const BranchTreeRenderer = ({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <TileView tile={root.tile} onClose={() => onClose?.(root.id)} />
+      <TileView
+        tile={root.tile}
+        focused={focusedTileId === root.id}
+        onClose={() => onClose?.(root.id)}
+        onClick={() => onClick?.(root.id)}
+      />
 
       {activeDropPosition && (
         <div

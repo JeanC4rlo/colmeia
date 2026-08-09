@@ -6,21 +6,25 @@ import { Separator } from "./Separator";
 
 type BranchViewProps = {
   branch: SplitBranch;
+  focusedTileId?: string | null;
   onRatioChange?: (newRatio: number) => void;
   onDrop?: (
-    leafId: string, 
-    position: DropPosition, 
-    tileType: Tile["type"], 
+    leafId: string,
+    position: DropPosition,
+    tileType: Tile["type"],
     sourceLeafId?: string
   ) => void;
   onClose?: (leafId: string) => void;
+  onClick?: (leafId: string) => void;
 };
 
 export const BranchView = ({
   branch,
+  focusedTileId,
   onRatioChange,
   onDrop,
   onClose,
+  onClick,
 }: BranchViewProps) => {
   const { direction, ratio: initialRatio, children } = branch;
   const [ratio, setRatio] = useState(initialRatio ?? 0.5);
@@ -38,14 +42,13 @@ export const BranchView = ({
         direction === "horizontal" ? "flex-row" : "flex-col"
       }`}
     >
-      <div
-        className="flex min-h-0 min-w-0 overflow-hidden"
-        style={{ flex: ratio }}
-      >
+      <div className="flex min-h-0 min-w-0 overflow-hidden" style={{ flex: ratio }}>
         <BranchTreeRenderer
           root={children[0]}
+          focusedTileId={focusedTileId}
           onDrop={onDrop}
           onClose={onClose}
+          onClick={onClick}
         />
       </div>
 
@@ -55,14 +58,13 @@ export const BranchView = ({
         onResize={handleResize}
       />
 
-      <div
-        className="flex min-h-0 min-w-0 overflow-hidden"
-        style={{ flex: 1 - ratio }}
-      >
+      <div className="flex min-h-0 min-w-0 overflow-hidden" style={{ flex: 1 - ratio }}>
         <BranchTreeRenderer
           root={children[1]}
+          focusedTileId={focusedTileId}
           onDrop={onDrop}
           onClose={onClose}
+          onClick={onClick}
         />
       </div>
     </div>

@@ -3,10 +3,6 @@ import type { Branch, Tile, Workspace } from "../types/tiling";
 import { insertTile, removeTile, type DropPosition } from "../utils/tiling";
 import { BranchTreeRenderer } from "./BranchTreeRenderer";
 
-const readTileType = (dataTransfer: DataTransfer) => {
-  return dataTransfer.getData("tile-type");
-};
-
 export const WorkspaceView = () => {
   const [workspace, setWorkspace] = useState<Workspace>({
     root: null,
@@ -17,7 +13,7 @@ export const WorkspaceView = () => {
   });
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const { root } = workspace;
+  const { root, focusedTileId } = workspace;
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -29,7 +25,7 @@ export const WorkspaceView = () => {
 
     if (root !== null) return;
 
-    const tileType = readTileType(event.dataTransfer);
+    const tileType = event.dataTransfer.getData("tile-type") || event.dataTransfer.getData("text/plain");
     if (!tileType) return;
 
     setWorkspace((current) => ({
@@ -87,6 +83,13 @@ export const WorkspaceView = () => {
     });
   };
 
+  const handleTileClick = (leafId: string) => {
+    setWorkspace((current) => ({
+      ...current,
+      focusedTileId: leafId,
+    }));
+  };
+
   return (
     <div
       ref={containerRef}
@@ -98,8 +101,10 @@ export const WorkspaceView = () => {
         <div className="h-full w-full">
           <BranchTreeRenderer
             root={root}
+            focusedTileId={focusedTileId}
             onDrop={handleTileDrop}
             onClose={handleTileClose}
+            onClick={handleTileClick}
           />
         </div>
       ) : (
