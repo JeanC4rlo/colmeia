@@ -1,4 +1,4 @@
-import { app, BrowserWindow, nativeTheme } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -17,7 +17,10 @@ const createWindow = () => {
             contextIsolation: true,
             nodeIntegration: false,
         },
+        titleBarStyle: "hidden",
     });
+
+    mainWindow.removeMenu();
 
     mainWindow.loadURL(
         app.isPackaged 
@@ -31,3 +34,15 @@ const createWindow = () => {
 };
 
 app.whenReady().then(createWindow);
+
+ipcMain.on("window:minimize", () => {
+    mainWindow?.minimize();
+})
+
+ipcMain.on("window:maximize", () => {
+    mainWindow?.maximize();
+})
+
+ipcMain.on("window:close", () => {
+    mainWindow?.close();
+})
