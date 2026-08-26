@@ -11,9 +11,9 @@ export type Tool = {
 
 export const tools: Tool[] = [
   {
-    type: "test",
-    name: "Teste",
-    description: "Ferramenta de teste para a criação de uma tiling view",
+    type: "empty",
+    name: "Tile Vazio",
+    description: "Tile vazio para preencher espaços ou criar divisões.",
     icon: BanIcon,
     tile: "empty"
   },

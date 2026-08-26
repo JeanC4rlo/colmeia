@@ -10,7 +10,10 @@ type SidebarProps = {
 export const Sidebar = ({ collapsed, onCollapse }: SidebarProps) => {
   const [draggingTool, setDraggingTool] = useState<string | null>(null);
 
-  const handleDragStart = (event: React.DragEvent<HTMLDivElement>, tool: Tool) => {
+  const handleDragStart = (
+    event: React.DragEvent<HTMLDivElement>,
+    tool: Tool
+  ) => {
     const preview = event.currentTarget.cloneNode(true) as HTMLDivElement;
 
     document.body.appendChild(preview);
@@ -39,7 +42,7 @@ export const Sidebar = ({ collapsed, onCollapse }: SidebarProps) => {
   return (
     <aside
       className={`relative flex h-full flex-col gap-2 justify-center ${
-        collapsed ? "w-0" : "px-6 border-1 border-dashed border-gray-300"
+        collapsed ? "w-0" : "px-6 border-r border-dashed border-gray-300"
       }`}
     >
       {!collapsed &&
@@ -48,18 +51,21 @@ export const Sidebar = ({ collapsed, onCollapse }: SidebarProps) => {
           const dragging = draggingTool === tool.type;
 
           return (
-            <div
-              key={tool.type}
-              draggable
-              onDragStart={(event) => handleDragStart(event, tool)}
-              onDragEnd={handleDragEnd}
-              className={`box-border flex h-10 w-10 items-center justify-center rounded-lg border p-2 text-white ${
-                dragging
-                  ? "border-dashed border-gray-300 bg-transparent"
-                  : "border-transparent bg-black"
-              } hover:cursor-pointer`}
-            >
-              <Icon size={20} />
+            <div key={tool.type} className="relative flex items-center group">
+              <div
+                draggable
+                onDragStart={(event) => handleDragStart(event, tool)}
+                onDragEnd={handleDragEnd}
+                className={`box-border rounded-sm flex h-11 w-11 aspect-square items-center justify-center p-2 text-white transition-transform duration-200 hover:scale-105 ${
+                  dragging ? "bg-gray-400 opacity-50" : "bg-black"
+                } hover:cursor-pointer`}
+              >
+                <Icon size={18} />
+              </div>
+
+              <div className="pointer-events-none absolute left-full ml-3 z-20 hidden rounded-md bg-gray-900 px-2 py-1 text-xs font-medium text-white shadow-md group-hover:block group-active:hidden whitespace-nowrap capitalize">
+                {tool.type}
+              </div>
             </div>
           );
         })}
@@ -73,7 +79,6 @@ export const Sidebar = ({ collapsed, onCollapse }: SidebarProps) => {
           type="button"
           onClick={onCollapse}
           className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-100 hover:text-black"
-          aria-label={collapsed ? "Abrir sidebar" : "Fechar sidebar"}
         >
           {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </button>

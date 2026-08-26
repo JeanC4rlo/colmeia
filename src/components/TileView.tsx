@@ -1,7 +1,7 @@
 import type { Tile } from "../types/tiling";
 import { tools } from "../types/tools";
-import { ChatbotTileView } from "./tiles/ChatbotTileView";
 import { XIcon } from "lucide-react";
+import { EmptyTileView } from "./tiles/EmptyTileView";
 
 type TileViewProps = {
   tile: Tile;
@@ -28,11 +28,11 @@ export const TileView = ({ tile, focused = false, onClose, onClick }: TileViewPr
     >
       <div className="absolute inset-0 pointer-events-none z-0" onClickCapture={() => onClick?.(tile.id)} />
 
-    <div
-      draggable={true}
-      onDragStart={handleDragStart}
+      <div
+        draggable={true}
+        onDragStart={handleDragStart}
         className="z-10 flex items-center justify-between border-b border-gray-200 bg-gray-100 px-3 py-2 select-none cursor-grab active:cursor-grabbing"
-    >
+      >
         <div className="flex items-center gap-2 text-gray-700 pointer-events-none">
           {Icon && <Icon size={16} />}
           <span className="text-sm font-semibold capitalize">{tile.type}</span>
@@ -48,7 +48,7 @@ export const TileView = ({ tile, focused = false, onClose, onClick }: TileViewPr
         </button>
       </div>
 
-      <div 
+      <div
         className="relative z-10 flex-1 p-2 overflow-y-auto"
         draggable={true}
         onDragStart={(e) => {
