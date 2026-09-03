@@ -7,22 +7,15 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "electron:dev": "ts-node electron/main.ts",
-    "electron": "electron .",
-    "start": "concurrently -k \"npm run dev\" \"wait-on http://localhost:5173 && npm run electron\""
+    "preview": "vite preview"
   },
-  "main": "electron/main.ts",
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
-    "concurrently": "^10.0.4",
-    "electron": "^43.3.0",
-    "electron-builder": "^26.15.3",
+    "axios": "^1.20.0",
     "lucide-react": "^1.30.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "tailwindcss": "^4.3.3",
-    "wait-on": "^9.1.0"
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
@@ -38,8 +31,6 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
     "globals": "^17.7.0",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.23.11",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.65.0",
     "vite": "^8.2.0"
