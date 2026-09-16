@@ -1,0 +1,75 @@
+services:
+  db:
+    image: pgvector/pgvector:pg17-trixie
+    container_name: colmeia-postgres
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_DB: ${PGDATABASE}
+    ports:
+      - "127.0.0.1:${PGPORT}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  migrations:
+    build:
+      context: ./api
+      args:
+        - NODE_ENV=development
+    container_name: colmeia-migrations
+    env_file: .env
+    environment:
+      PGHOST: db
+      PGPORT: 5432
+    command:
+      "npm run migrate"
+    depends_on:
+      - db
+
+  api:
+    build:
+      context: ./api
+    container_name: colmeia-api
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:5000:5000"
+    command: npm start
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    develop:
+      watch:
+        - path: ./api/package.json
+          action: rebuild
+        - path: ./api
+          target: /app
+          action: sync
+
+  web:
+    build:
+      context: ./frontend
+    container_name: colmeia-web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5173:5173"
+    command: npm run dev -- --host 0.0.0.0
+    environment:
+      VITE_API_URL: http://localhost:5000
+    depends_on:
+      - api
+    volumes:
+    - ./frontend:/app
+    - /app/node_modules
+    develop:
+      watch:
+        - path: ./frontend/package.json
+          action: rebuild
+        - path: ./frontend
+          target: /app
+          action: sync
+
+volumes:
+  pgdata:
