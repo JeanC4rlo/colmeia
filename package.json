@@ -1,0 +1,14 @@
+{
+  "name": "colmeia",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "electron/main.ts",
+  "scripts": {
+    "electron:start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^44.1.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^7.0.2"
+  }
+}
