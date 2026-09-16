@@ -1,8 +1,8 @@
 services:
   db:
     image: pgvector/pgvector:pg17-trixie
-    container_name: colmeia-postgres
-    restart: unless-stopped
+    container_name: colmeia-postgres-prod
+    restart: always
     env_file: .env
     environment:
       POSTGRES_USER: ${PGUSER}
@@ -11,14 +11,14 @@ services:
     ports:
       - "127.0.0.1:${PGPORT}:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata_prod:/var/lib/postgresql/data
 
   migrations:
     build:
       context: ./api
       args:
-        - NODE_ENV=development
-    container_name: colmeia-migrations
+        - NODE_ENV=production
+    container_name: colmeia-migrations-prod
     env_file: .env
     environment:
       PGHOST: db
@@ -30,9 +30,8 @@ services:
   api:
     build:
       context: ./api
-      dockerfile: Dockerfile
-    container_name: colmeia-api
-    restart: unless-stopped
+    container_name: colmeia-api-prod
+    restart: always
     env_file: .env
     ports:
       - "0.0.0.0:5000:5000"
@@ -40,39 +39,21 @@ services:
     depends_on:
       migrations:
         condition: service_completed_successfully
-    develop:
-      watch:
-        - path: ./api/package.json
-          action: rebuild
-        - path: ./api
-          target: /app
-          action: sync
 
   web:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
-    container_name: colmeia-web
-    restart: unless-stopped
+      dockerfile: Dockerfile.prod
+    container_name: colmeia-web-prod
+    restart: always
     ports:
-      - "0.0.0.0:5173:5173"
-    command: npm run dev -- --host 0.0.0.0
+      - "0.0.0.0:80:80"
     env_file: .env
     environment:
       VITE_API_URL: ${API_URL}
       VITE_URL: ${VITE_URL}
     depends_on:
       - api
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    develop:
-      watch:
-        - path: ./frontend/package.json
-          action: rebuild
-        - path: ./frontend
-          target: /app
-          action: sync
 
 volumes:
-  pgdata:
+  pgdata_prod:
