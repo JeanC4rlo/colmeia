@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "./Button";
 import { tools, type Tool } from "../types/tools";
 
 type SidebarProps = {
@@ -75,13 +76,14 @@ export const Sidebar = ({ collapsed, onCollapse }: SidebarProps) => {
           collapsed ? "left-0" : "-right-3.5"
         }`}
       >
-        <button
-          type="button"
+        <Button
+          size="icon"
+          variant="secondary"
           onClick={onCollapse}
-          className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-100 hover:text-black"
+          className="rounded-full text-gray-600 shadow-sm hover:text-black"
         >
           {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-        </button>
+        </Button>
       </div>
     </aside>
   );
