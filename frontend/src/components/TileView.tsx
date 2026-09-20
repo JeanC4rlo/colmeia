@@ -2,8 +2,8 @@ import type { Tile } from "../types/tiling";
 import { tools } from "../types/tools";
 import { XIcon } from "lucide-react";
 import { Button } from "./Button";
-import { EmptyTileView } from "./tiles/EmptyTileView";
-import { TaskView } from "./tiles/TaskView";
+import { EmptyTileView } from "../modules/EmptyTile/EmptyTileView";
+import { TaskView } from "../modules/TaskTile/TaskTileView";
 
 type TileViewProps = {
   tile: Tile;
