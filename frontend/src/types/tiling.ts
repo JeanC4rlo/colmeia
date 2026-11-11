@@ -21,7 +21,12 @@ export type EmptyTile = {
   type: "empty";
 };
 
-export type Tile = | EmptyTile;
+export type TaskTile = {
+  id: string;
+  type: "tasks";
+};
+
+export type Tile = EmptyTile | TaskTile;
 
 type Sidebar = {
   collapsed: boolean;

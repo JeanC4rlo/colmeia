@@ -1,7 +1,9 @@
 import type { Tile } from "../types/tiling";
 import { tools } from "../types/tools";
 import { XIcon } from "lucide-react";
-import { EmptyTileView } from "./tiles/EmptyTileView";
+import { Button } from "./Button";
+import { EmptyTileView } from "../modules/EmptyTile/EmptyTileView";
+import { TaskView } from "../modules/TaskTile/TaskTileView";
 
 type TileViewProps = {
   tile: Tile;
@@ -23,6 +25,7 @@ export const TileView = ({ tile, focused = false, onClose, onClick }: TileViewPr
   return (
     <div
       onClickCapture={() => onClick?.(tile.id)}
+      onClick={(event) => event.stopPropagation()}
       className={`relative flex h-full w-full flex-col overflow-hidden rounded-lg border bg-white border-2
         ${focused ? "border-solid border-amber-500" : "border-dashed border-gray-300"}`}
     >
@@ -37,15 +40,16 @@ export const TileView = ({ tile, focused = false, onClose, onClick }: TileViewPr
           {Icon && <Icon size={16} />}
           <span className="text-sm font-semibold capitalize">{tile.type}</span>
         </div>
-        <button
+        <Button
+          size="icon"
+          variant="ghost"
           onClick={(e) => {
             e.stopPropagation();
             onClose?.(tile.id);
           }}
-          className="text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded p-1 text-xs transition-colors hover:cursor-pointer"
         >
           <XIcon size={16} />
-        </button>
+        </Button>
       </div>
 
       <div
@@ -60,6 +64,8 @@ export const TileView = ({ tile, focused = false, onClose, onClick }: TileViewPr
           switch (tile.type) {
             case "empty":
               return <EmptyTileView />;
+            case "tasks":
+              return <TaskView />;
             default:
               return null;
           }

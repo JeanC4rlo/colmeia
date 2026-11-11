@@ -11,7 +11,7 @@ const createWindow = () => {
   mainWindow = new BrowserWindow({
     width: 1600,
     height: 900,
-    icon: path.join(__dirname, '../public/colmeia.png'),
+    icon: path.join(__dirname, './assets/colmeia.png'),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,

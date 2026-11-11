@@ -1,0 +1,59 @@
+services:
+  db:
+    image: pgvector/pgvector:pg17-trixie
+    container_name: colmeia-postgres-prod
+    restart: always
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_DB: ${PGDATABASE}
+    ports:
+      - "127.0.0.1:${PGPORT}:5432"
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+
+  migrations:
+    build:
+      context: ./api
+      args:
+        - NODE_ENV=production
+    container_name: colmeia-migrations-prod
+    env_file: .env
+    environment:
+      PGHOST: db
+      PGPORT: 5432
+    command: npm run migrate
+    depends_on:
+      - db
+
+  api:
+    build:
+      context: ./api
+    container_name: colmeia-api-prod
+    restart: always
+    env_file: .env
+    ports:
+      - "0.0.0.0:5000:5000"
+    command: npm start
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: colmeia-web-prod
+    restart: always
+    ports:
+      - "0.0.0.0:80:80"
+    env_file: .env
+    environment:
+      VITE_API_URL: ${API_URL}
+      VITE_URL: ${VITE_URL}
+    depends_on:
+      - api
+
+volumes:
+  pgdata_prod:
