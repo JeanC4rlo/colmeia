@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "allowImportingTsExtensions": true,
+        "noEmit": true,
+        "target": "ESNext",
+        "useDefineForClassFields": true,
+        "allowJs": true,
+        "checkJs": false,
+        "allowSyntheticDefaultImports": true,
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "esModuleInterop": true,
+        "strict": false,
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": true,
+        "skipLibCheck": true,
+        "types": ["node"],
+        "strictNullChecks": true,
+
+        "paths": {
+            "#server": ["./src/server.ts"],
+            "#database/*": ["./src/database/*"],
+            "#repositories/*": ["./src/repositories/*"],
+            "#routes/*": ["./src/routes/*"],
+            "#types/*": ["./src/types/*"],
+            "#utils/*": ["./src/utils/*"]
+        }
+    },
+    "include": ["src"]
+}
