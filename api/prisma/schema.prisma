@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TaskStatus {
+  PENDING
+  DONE
+  NOT_DONE
+}
+
+model Task {
+  id           Int         @id @default(autoincrement())
+  title        String
+  description  String      @db.Text
+  deadline     DateTime
+  status       TaskStatus  @default(PENDING)
+  isDeleted    Boolean     @default(false)     @map("is_deleted")
+  createdAt    DateTime    @default(now())     @map("created_at")
+  updatedAt    DateTime    @updatedAt          @map("updated_at")
+
+  @@map("tasks")
+}
