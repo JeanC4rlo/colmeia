@@ -8,10 +8,16 @@ services:
       POSTGRES_USER: ${PGUSER}
       POSTGRES_PASSWORD: ${PGPASSWORD}
       POSTGRES_DB: ${PGDATABASE}
+    command: ["postgres", "-p", "${PGPORT}"]
     ports:
-      - "127.0.0.1:${PGPORT}:5432"
+      - "127.0.0.1:${PGPORT}:${PGPORT}"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER} -d ${PGDATABASE} -p ${PGPORT}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   migrations:
     build:
@@ -21,11 +27,11 @@ services:
     container_name: colmeia-migrations
     env_file: .env
     environment:
-      PGHOST: db
-      PGPORT: 5432
+      DATABASE_URL: postgresql://${PGUSER}:${PGPASSWORD}@db:${PGPORT}/${PGDATABASE}?schema=public
     command: npm run migrate
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   api:
     build:
@@ -34,6 +40,8 @@ services:
     container_name: colmeia-api
     restart: unless-stopped
     env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${PGUSER}:${PGPASSWORD}@db:${PGPORT}/${PGDATABASE}?schema=public
     ports:
       - "0.0.0.0:5000:5000"
     command: npm start

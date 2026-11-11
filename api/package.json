@@ -4,7 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "migrate": "ley up -r dotenv/config",
+        "generate": "prisma generate",
+        "migrate": "npm run generate && prisma migrate deploy",
         "start": "tsx server.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
@@ -17,7 +18,6 @@
         "cors": "^2.8.6",
         "dotenv": "^17.4.2",
         "express": "^5.2.1",
-        "ley": "^0.8.1",
         "pg": "^8.23.0",
         "tsx": "^4.23.11"
     },

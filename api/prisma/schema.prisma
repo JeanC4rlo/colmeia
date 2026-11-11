@@ -11,6 +11,8 @@ enum TaskStatus {
   PENDING
   DONE
   NOT_DONE
+
+  @@map("TaskStatus")
 }
 
 model Task {
