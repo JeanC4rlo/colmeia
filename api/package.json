@@ -13,11 +13,13 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@prisma/client": "^6.19.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "ley": "^0.8.1",
     "pg": "^8.23.0",
+    "prisma": "^6.19.3",
     "tsx": "^4.23.11"
   },
   "devDependencies": {
