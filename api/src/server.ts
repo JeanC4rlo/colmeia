@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import taskRoutes from "./routes/tasks.js"; 
+import taskRoutes from "#routes/tasks.ts";
 import "dotenv/config";
 
 const PORT = 5000;
@@ -11,7 +11,7 @@ const corsOptions = {
     origin: allowedOrigin,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
+    credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -23,5 +23,7 @@ apiRouter.use("/tasks", taskRoutes);
 app.use("/api", apiRouter);
 
 app.listen(PORT, () => {
-    console.log(`\x1b[36m[express]\x1b[0m Servidor Express rodando em http://localhost:${PORT}`);
+    console.log(
+        `\x1b[36m[express]\x1b[0m Servidor Express rodando em http://localhost:${PORT}`,
+    );
 });
