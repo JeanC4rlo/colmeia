@@ -1,0 +1,86 @@
+services:
+  db:
+    image: pgvector/pgvector:pg17-trixie
+    container_name: colmeia-postgres
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_DB: ${PGDATABASE}
+    command: ["postgres", "-p", "${PGPORT}"]
+    ports:
+      - "127.0.0.1:${PGPORT}:${PGPORT}"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER} -d ${PGDATABASE} -p ${PGPORT}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrations:
+    build:
+      context: ./api
+      args:
+        - NODE_ENV=development
+    container_name: colmeia-migrations
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${PGUSER}:${PGPASSWORD}@db:${PGPORT}/${PGDATABASE}?schema=public
+    command: npm run migrate
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: colmeia-api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${PGUSER}:${PGPASSWORD}@db:${PGPORT}/${PGDATABASE}?schema=public
+    ports:
+      - "0.0.0.0:5000:5000"
+    command: npm start
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    develop:
+      watch:
+        - path: ./api/package.json
+          action: rebuild
+        - path: ./api
+          target: /app
+          action: sync
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: colmeia-web
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:5173:5173"
+    command: npm run dev -- --host 0.0.0.0
+    env_file: .env
+    environment:
+      VITE_API_URL: ${API_URL}
+      VITE_URL: ${VITE_URL}
+    depends_on:
+      - api
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    develop:
+      watch:
+        - path: ./frontend/package.json
+          action: rebuild
+        - path: ./frontend
+          target: /app
+          action: sync
+
+volumes:
+  pgdata:

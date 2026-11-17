@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Branch, Tile, Workspace } from "../types/tiling";
 import { insertTile, removeTile, type DropPosition } from "../utils/tiling";
 import { BranchTreeRenderer } from "./BranchTreeRenderer";
@@ -40,6 +40,25 @@ export const WorkspaceView = () => {
       },
     }));
   };
+
+  const handleBackgroundClick = () => {
+    setWorkspace((current) => {
+      if (current.focusedTileId === null) return current;
+
+      return {
+        ...current,
+        focusedTileId: null,
+      };
+    });
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", handleBackgroundClick);
+
+    return () => {
+      document.removeEventListener("click", handleBackgroundClick);
+    };
+  }, []);
 
   const handleTileDrop = (
     targetLeafId: string,

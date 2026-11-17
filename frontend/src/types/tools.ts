@@ -1,4 +1,4 @@
-import { BanIcon, type LucideIcon } from "lucide-react";
+import { BanIcon, ListTodoIcon, type LucideIcon } from "lucide-react";
 import type { Tile } from "./tiling";
 
 export type Tool = {
@@ -10,6 +10,13 @@ export type Tool = {
 };
 
 export const tools: Tool[] = [
+  {
+    type: "tasks",
+    name: "Tarefas",
+    description: "Crie uma nova tarefa.",
+    icon: ListTodoIcon,
+    tile: "tasks"
+  },
   {
     type: "empty",
     name: "Tile Vazio",
