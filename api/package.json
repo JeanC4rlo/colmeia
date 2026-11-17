@@ -6,7 +6,7 @@
     "scripts": {
         "generate": "prisma generate",
         "migrate": "npm run generate && prisma migrate deploy",
-        "start": "tsx server.ts",
+        "start": "tsx src/server.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [],
