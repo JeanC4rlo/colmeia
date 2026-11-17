@@ -14,7 +14,7 @@ export function createTaskRepository(client: DBClient = prismaClient) {
         >(client.task),
 
         async findAll() {
-            client.task.findMany({
+            return client.task.findMany({
                 where: { isDeleted: false },
                 orderBy: { createdAt: "desc" },
             });

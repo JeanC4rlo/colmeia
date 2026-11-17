@@ -17,20 +17,25 @@ router.post("/create", async (req, res) => {
     try {
         const { title, description, deadline } = req.body;
 
-        const titleValue = title || null;
-        const descriptionValue = description || null;
-        const deadlineValue = deadline || null;
+        const deadlineValue = deadline ? new Date(deadline) : new Date();
+
+        if (Number.isNaN(deadlineValue.getTime())) {
+            res.status(400).json({ message: "A data da tarefa é inválida." });
+            return;
+        }
 
         const newTask = await taskRepository.create({
-            title: titleValue,
-            description: descriptionValue,
+            title: typeof title === "string" && title.trim()
+                ? title.trim()
+                : "Tarefa não nomeada",
+            description: typeof description === "string" ? description : "",
             deadline: deadlineValue,
         });
 
         res.status(201).json(newTask);
     } catch (err) {
+        console.error("Erro ao criar tarefa:", err);
         res.status(500).json({
-            error: err,
             message: "Erro ao criar tarefa.",
         });
     }
